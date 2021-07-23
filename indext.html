@@ -10,27 +10,32 @@
     <header>
         <h1>Code Quiz!</h1>
         <span id="timer">Time</span>
-        <button id=startButton>Start</button>
+        <button id="startButton">Start</button>
     </header>
 
     <main class="hidden">
 
         <div>
-            <p id="question">Questions??????</p>
+            <p id="question"></p>
+        </div>
+
+        <div id="choices">
+            <button id="option1"></button>
+            <button id="option2"></button>
+            <button id="option3"></button>
+            <button id="option4"></button>
         </div>
 
         <div>
-            <button>Choice 1</button>
-            <button>Choice 2</button>
-            <button>choice 3</button>
-            <button>choice 4</button>
+            <p id="result"></p>
         </div>
 
-        <div>
-            <p id=prevHighscore></p>
+        <div class= hidden>
+            <p id=prevHighscore>your highscore</p>
             <p>type name</p>
             <form action=""></form>
         </div>
     </main>
 </body>
+<script src="assets/javascript/script.js"></script>
 </html>
