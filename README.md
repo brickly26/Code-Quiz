@@ -41,3 +41,6 @@ WHEN the game is over
 THEN I can save my initials and my score
 ```
 
+## Deployed Version
+
+[https://brickly26.github.io/Code-Quiz/](https://brickly26.github.io/Code-Quiz/)
