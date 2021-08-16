@@ -188,7 +188,7 @@ bodyEl[1].addEventListener('click', function(event) {
         checkAnswer(event);
     } else {
         if(event.target.innerText === questions[questionNum].answer) {
-            userScore += 5
+           userScore += 5
             responseEl.style.color = 'green'
             responseEl.textContent = "✓ Correct"
         } else {
