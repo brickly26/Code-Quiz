@@ -1,138 +1,207 @@
-/*
-
-    when button is click start game function is run
-        start game function
-        start timer
-        if time > 0 && questions array length != 0
-        loop through questions
-            pick random question from array or objects
-            render questions
-            when an answer is picked  check it if its correct
-            display next question
-
-        else if time > 0 questions array =0
-            game over
-            display score
-            ask for name
-            store name in local storage 
-        
-        else 
-            game over
-            display score
-            ask for name
-            store in local storage
-        
-
-
-    when high score is click
-        retrieve last score from local storage
-        display score
-
-
-*/
-
-
-
-
 // DEPENDECIES
-var startBtn = document.getElementById("startButton");
+var landingEl = document.getElementById("landing-el");
+var questScreenEl = document.getElementById("question-el");
+var endScreenEl = document.getElementById("ending-el");
+var highscoreEl = document.getElementById("highscore-el");
+var viewHighEl = document.getElementById("view-high");
 var timerEl = document.getElementById("timer");
-var previousHigh = document.getElementById("prevHighscore");
-var questionEl = document.getElementById("question");
-var choice1 = document.getElementById("option1");
-var choice2 = document.getElementById("option2");
-var choice3 = document.getElementById("option3");
-var choice4 = document.getElementById("option4");
-var choices = document.getElementById("choices")
-var resultEl = document.getElementById("result")
-
+var startBtn = document.getElementById("start");
+var saveBtn = document.getElementById("save");
+var bodyEl = document.querySelectorAll(".body");
+var titleEl = document.querySelectorAll(".title");
+var inputEl = document.getElementById("input");
+var responseEl = document.getElementById("response");
+var retryBtn = document.querySelectorAll("#back-to-start");
 
 // DATA
-var Question = [
-    question1 = {
-        question: "Inside which HTML element do we put the JavaScript?",
-        option1: "<js>",
-        option2: "<javascript>",
-        option3: "<script>", //correct
-        option4: "<scripting>",
+
+var timeLeft = 60;
+var questionNum = 0;
+var userScore = 0;
+var actualTimer;
+var currentAnswer;
+
+var questions = [
+    {
+        question: "How to write an IF statement in JavaScript?",
+        choices: ["if (i===5)", "if i===5 then", "if i=5", "if i=5 then"],
+        answer: "if (i===5)"
     },
-    question2 = {
-        question: "Where is the correct place to insert a JavaScript?",
-        option1: "<head>", //correct
-        option2: "<section>",
-        option3: "<main>",
-        option4: "<footer>",
+    {
+        question: "How do you call a function named 'myFunction'?",
+        choices: ["call myFunction()", "myFunction()", "function myFunction()", "myFunction = () => {}"],
+        answer: "myFunction()"
     },
-    question3 = {
-        question: "How do you create a function in JavaScript?",
-        option1: "function:myfunctions()",
-        option2: "function myFunction()", //correct
-        option3: "function = myfunction()",
-        option4: "fucntion.myfunction()",
+    {
+        question: "How can you add a comment in a JavaScript?",
+        choices: ["/*Comment*/", "--Comment--", "'Comment'", "//Comment"],
+        answer: "//Comment"
+    },
+    {
+        question: "Which operator is used to assign a value to a variable?",
+        choices: ["=", "*", "===", "!=="],
+        answer: "="
     }
 ]
-
-var answer = ["<script>", "<head>", "function myFunction()"]
-
-var score;
-var timeLeft;
-var gameOver = false;
-
 // FUNCTIONS
 
-function startGame() {
-    score = 0;
-    timeLeft = 5;
-    var timerInterval = setInterval(doTimer, 1000)
-    console.log(timeLeft);
-    var counter = 0;
-    renderQuestion(counter)
+function startTimer() {
+    actualTimer = setInterval(doTimer, 1000);
 }
 
 function doTimer() {
+    if (timeLeft <= 0) {
+        clearInterval(actualTimer);
+        renderEnding();
+        return
+    }
     timeLeft--;
-    timerEl.textContent = `${timeLeft} seconds left`;
-    if (timeLeft === 0) {
-        clearInterval(timerInterval);
-        gameOver = true;
+    timerEl.textContent = "Time: " + timeLeft;
+
+}
+
+function startGame() {
+    questScreenEl.style.display = "flex";
+    landingEl.style.display = "none";
+    endScreenEl.style.display = "none";
+    highscoreEl.style.display = "none";
+    questionNum = 0;
+    score = 0;
+    timeLeft = 60;
+    startTimer()
+    renderQuestion();
+}
+
+function renderQuestion() {
+    titleEl[1].children[0].textContent = questions[questionNum].question;
+    for (var i = 0; i < questions[questionNum].choices.length; i++) {
+        bodyEl[1].children[i].textContent = questions[questionNum].choices[i];
     }
 
 }
 
-function renderQuestion(i) {
-    if(i < Question.length) {
-        questionEl.textContent = Question[i].question;
-        choice1.textContent = Question[i].option1;
-        choice2.textContent = Question[i].option2;
-        choice3.textContent = Question[i].option3;
-        choice4.textContent = Question[i].option4;
+function checkAnswer(event) {
+    var userInput = event.target.innerText;
+    console.log(userInput);
+    console.log(questions[questionNum].answer);
+    if (userInput === questions[questionNum].answer) {
+        questionNum++;
+        userScore += 5
+        responseEl.style.color = 'green'
+        responseEl.textContent = "✓ Correct"
+        setTimeout(function() {responseEl.textContent = ""}, 2000);
+        renderQuestion();
     } else {
-        gameOver();
-    }
-    choices.addEventListener("click", function(event) {
-        var element = event.target;
-        if (element.matches("button")) {
-            var temp = element.innerText;
-            if (answer.includes(temp)) {
-                resultEl.textContent = "Correct"
-                score = score + 5;
-            }
-            else {
-                resultEl.textContent = "Incorrect"
-            }
-            i++
-            renderQuestion(i)
-            console.log(score)
+        responseEl.style.color = 'red'
+        responseEl.textContent = "X Incorrect"
+        setTimeout(function() {responseEl.textContent = ""}, 2000);
+        if(timeLeft > 5) {
+            timeLeft -= 5;
+            questionNum++;
+            renderQuestion();
+        } else {
+            timeLeft = 0;
+            endGame();
         }
-    })
-
-
+    }
 }
 
-function gameOver() {
-    previousHigh.textContent = `Your score: ${score}`
+function endGame() {
+    clearInterval(actualTimer);
+    renderEnding();
+}
+
+function renderEnding() {
+    questScreenEl.style.display = "none";
+    landingEl.style.display = "none";
+    endScreenEl.style.display = "flex";
+    highscoreEl.style.display = "none";
+    timerEl.textContent = "Time: " + timeLeft;
+    var endText = bodyEl[2].children[0]
+    endText.textContent = "Your final score is " + userScore + "! Save your score to the leaderboard, or try again."
+}
+
+function renderHighscore () {
+    questScreenEl.style.display = "none";
+    landingEl.style.display = "none";
+    endScreenEl.style.display = "none";
+    highscoreEl.style.display = "flex";
+    var scores = JSON.parse(localStorage.getItem("Highscores"));
+    var tableEl = bodyEl[3].children[0];
+    if(tableEl.children.length > 1) {
+        for (var i = 1; i < tableEl.children.length; i++) {
+            tableEl.removeChild(tableEl.children[i]);
+        }
+    }
+    console.dir(tableEl);
+    for (var i = 0; i < scores.length; i++) {
+        var tableRow = document.createElement('tr');
+        var tableName = document.createElement('th');
+        var tableScore = document.createElement('th');
+
+        tableName.textContent = scores[i].name;
+        tableScore.textContent = scores[i].score;
+        tableName.setAttribute("style", "font-weight:normal;text-align:left;padding:3px;");
+        tableScore.setAttribute("style", "font-weight:normal;text-align:left;padding:3px;")
+
+        tableRow.append(tableName);
+        tableRow.append(tableScore);
+
+        tableEl.append(tableRow);
+    }
+}
+
+function saveScore() {
+    var userName = inputEl.value;
+    if (!localStorage.getItem("Highscores")) {
+        var tempHighscore = [
+            {
+                name: userName,
+                score: userScore
+            }
+        ]
+        localStorage.setItem("Highscores", JSON.stringify(tempHighscore));
+    } else {
+        var tempHighscore = JSON.parse(localStorage.getItem("Highscores"));
+        console.log(tempHighscore)
+        tempHighscore.push({
+            name: userName,
+            score: userScore
+        });
+        localStorage.setItem("Highscores", JSON.stringify(tempHighscore))
+    }
+    renderHighscore();
+}
+
+function renderHome() {
+    console.log("hello");
+    questScreenEl.style.display = "none";
+    landingEl.style.display = "flex";
+    endScreenEl.style.display = "none";
+    highscoreEl.style.display = "none";
 }
 
 // USER INTERACTION 
 
-startBtn.addEventListener("click", startGame)
+bodyEl[1].addEventListener('click', function(event) {
+    if (questionNum < questions.length-1) {
+        checkAnswer(event);
+    } else {
+        if(event.target.innerText === questions[questionNum].answer) {
+            userScore += 5
+            responseEl.style.color = 'green'
+            responseEl.textContent = "✓ Correct"
+        }
+        setTimeout(function() {responseEl.textContent = ""}, 2000); 
+        endGame();
+    }
+});
+
+startBtn.addEventListener('click', startGame);
+
+viewHighEl.addEventListener('click', renderHighscore);
+
+saveBtn.addEventListener('click', saveScore);
+
+retryBtn[0].addEventListener('click', renderHome);
+retryBtn[1].addEventListener('click', renderHome);
