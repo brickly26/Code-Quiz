@@ -17,10 +17,6 @@ Name: Burak Aksu
 
 Email: Sabburak26@gmail.com
 
-## Description
-
-In this homework assignment we put our recently learened DOM manipulation techniques to the test. 
-
 ## User Story
 
 ```
