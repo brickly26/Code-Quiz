@@ -191,6 +191,14 @@ bodyEl[1].addEventListener('click', function(event) {
             userScore += 5
             responseEl.style.color = 'green'
             responseEl.textContent = "✓ Correct"
+        } else {
+            responseEl.style.color = 'red'
+            responseEl.textContent = "X Incorrect";
+            if(timeLeft > 5) {
+                timeLeft -= 5;
+            } else {
+                timeLeft = 0;
+            }
         }
         setTimeout(function() {responseEl.textContent = ""}, 2000); 
         endGame();
